@@ -74,6 +74,10 @@ class DataTransformer {
    */
   void Transform(const cv::Mat& cv_img, Blob<Dtype>* transformed_blob);
 
+  void Transform(const cv::Mat& cv_img, Blob<Dtype>* transformed_blob, int &h_off, int &w_off, int &do_mirror, vector<float> & col_ranges);
+  void Transform(const Datum& datum, Blob<Dtype>* transformed_blob, int &h_off, int &w_off, int &do_mirror, vector<float> & col_ranges);
+
+
   /**
    * @brief Applies the same transformation defined in the data layer's
    * transform_param block to all the num images in a input_blob.
@@ -86,6 +90,8 @@ class DataTransformer {
    *    input blob. It can be part of top blob's data.
    */
   void Transform(Blob<Dtype>* input_blob, Blob<Dtype>* transformed_blob);
+
+  bool GetMirror( );
 
  protected:
    /**

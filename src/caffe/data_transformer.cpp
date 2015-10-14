@@ -301,6 +301,282 @@ void DataTransformer<Dtype>::Transform(const cv::Mat& cv_img,
   }
 }
 
+
+template<typename Dtype>
+bool DataTransformer<Dtype>::GetMirror()
+{
+  param_.mirror() && Rand(2);
+}
+
+
+template<typename Dtype>
+void DataTransformer<Dtype>::Transform(const Datum& datum,
+                                       Blob<Dtype>* transformed_blob,  int &h_off, int &w_off, int &do_mirror, vector<float> & col_ranges) {
+
+  const int img_channels = datum.channels();
+  const int img_height = datum.height();
+  const int img_width = datum.width();
+
+  const int channels = transformed_blob->channels();
+  const int height = transformed_blob->height();
+  const int width = transformed_blob->width();
+  const int num = transformed_blob->num();
+
+  //CHECK_EQ(channels, img_channels);
+  CHECK_LE(height, img_height);
+  CHECK_LE(width, img_width);
+  CHECK_GE(num, 1);
+  CHECK_EQ(img_channels, col_ranges.size());
+
+  const int crop_size = param_.crop_size();
+  const Dtype scale = param_.scale();
+  const bool has_mean_file = param_.has_mean_file();
+  const bool has_mean_values = mean_values_.size() > 0;
+  if (do_mirror == -1)
+  {
+    do_mirror = param_.mirror() && Rand(2);
+  }
+
+
+  CHECK_GT(img_channels, 0);
+  CHECK_GE(img_height, crop_size);
+  CHECK_GE(img_width, crop_size);
+
+  Dtype* mean = NULL;
+  if (has_mean_file)
+  {
+    CHECK_EQ(img_channels, data_mean_.channels());
+    if( (img_height == data_mean_.height() && img_width == data_mean_.width() ) || (crop_size == data_mean_.height() && crop_size == data_mean_.width() ) )
+    {
+        mean = data_mean_.mutable_cpu_data();
+    }
+    else
+    {
+      CHECK_EQ(img_height, data_mean_.height());
+      CHECK_EQ(img_width, data_mean_.width());
+    }
+  }
+  if (has_mean_values) {
+    CHECK(mean_values_.size() == 1 || mean_values_.size() == img_channels) <<
+     "Specify either 1 mean_value or as many as channels: " << img_channels;
+    if (img_channels > 1 && mean_values_.size() == 1) {
+      // Replicate the mean_value for simplicity
+      for (int c = 1; c < img_channels; ++c) {
+        mean_values_.push_back(mean_values_[0]);
+      }
+    }
+  }
+
+  //cv::Mat cv_cropped_img = cv_img;
+  if (crop_size) {
+    CHECK_EQ(crop_size, height);
+    CHECK_EQ(crop_size, width);
+    // We only do random crop when we do training.
+    if (phase_ == TRAIN) {
+      if (h_off == -1 && w_off == -1)
+      {
+        h_off = Rand(img_height - crop_size + 1);
+        w_off = Rand(img_width - crop_size + 1);
+      }
+    }
+    else {
+      if (h_off == -1 && w_off == -1)
+      {
+        h_off = (img_height - crop_size) / 2;
+        w_off = (img_width - crop_size) / 2;
+      }
+    }
+    //cv::Rect roi(w_off, h_off, crop_size, crop_size);
+    //cv_cropped_img = cv_img(roi);
+  }
+  else {
+  h_off = 0;
+  w_off = 0;
+    CHECK_EQ(img_height, height);
+    CHECK_EQ(img_width, width);
+  }
+
+  //CHECK(cv_cropped_img.data);
+
+  Dtype* transformed_data = transformed_blob->mutable_cpu_data();
+  int top_index;
+  // debug
+  /*char ss1[1010];
+  sprintf(ss1,"/home/xiaolonw/opt_flows/temp_results/sth.jpg");
+  cv::Mat img(Size(crop_size, crop_size), CV_8UC1);*/
+
+  for (int h = 0; h < height; ++h) {
+    int img_index = 0;
+    for (int w = 0; w < width; ++w) {
+      for (int c = 0; c < img_channels; ++c) {
+      float now_col = col_ranges[c];
+        if (do_mirror) {
+          top_index = (c * height + h) * width + (width - 1 - w);
+        } else {
+          top_index = (c * height + h) * width + w;
+        }
+        img_index = (c * img_height + h + h_off) * img_width + w + w_off;
+        Dtype pixel = datum.float_data(img_index);
+
+        // color augmentation
+        pixel = std::min( pixel * now_col, Dtype(255.0) );
+        // debug
+        //img.at<uchar>(h, w) = (uchar)(pixel);
+
+        if (has_mean_file) {
+          int mean_index = (c * img_height + h_off + h) * img_width + w_off + w;
+          if (crop_size == data_mean_.height() && crop_size == data_mean_.width() )
+          {
+            mean_index = (c * height + h) * width + w;
+          }
+          transformed_data[top_index] = (pixel - mean[mean_index]) * scale;
+        } else {
+          if (has_mean_values) {
+            transformed_data[top_index] =
+              (pixel - mean_values_[c]) * scale;
+          } else {
+            transformed_data[top_index] = pixel * scale;
+          }
+        }
+      }
+    }
+  }
+  //imwrite(ss1,img);
+
+
+}
+
+
+template<typename Dtype>
+void DataTransformer<Dtype>::Transform(const cv::Mat& cv_img,
+                                       Blob<Dtype>* transformed_blob,  int &h_off, int &w_off, int &do_mirror, vector<float> & col_ranges) {
+  const int img_channels = cv_img.channels();
+  const int img_height = cv_img.rows;
+  const int img_width = cv_img.cols;
+
+  const int channels = transformed_blob->channels();
+  const int height = transformed_blob->height();
+  const int width = transformed_blob->width();
+  const int num = transformed_blob->num();
+
+  //CHECK_EQ(channels, img_channels);
+  CHECK_LE(height, img_height);
+  CHECK_LE(width, img_width);
+  CHECK_GE(num, 1);
+  CHECK_EQ(img_channels, col_ranges.size());
+
+  CHECK(cv_img.depth() == CV_8U) << "Image data type must be unsigned byte";
+
+  const int crop_size = param_.crop_size();
+  const Dtype scale = param_.scale();
+  const bool has_mean_file = param_.has_mean_file();
+  const bool has_mean_values = mean_values_.size() > 0;
+  if (do_mirror == -1)
+  {
+	  do_mirror = param_.mirror() && Rand(2);
+  }
+
+
+  CHECK_GT(img_channels, 0);
+  CHECK_GE(img_height, crop_size);
+  CHECK_GE(img_width, crop_size);
+
+  Dtype* mean = NULL;
+  if (has_mean_file)
+  {
+    CHECK_EQ(img_channels, data_mean_.channels());
+    if( (img_height == data_mean_.height() && img_width == data_mean_.width() ) || (crop_size == data_mean_.height() && crop_size == data_mean_.width() ) )
+    {
+        mean = data_mean_.mutable_cpu_data();
+    }
+    else
+    {
+    	CHECK_EQ(img_height, data_mean_.height());
+    	CHECK_EQ(img_width, data_mean_.width());
+    }
+  }
+  if (has_mean_values) {
+    CHECK(mean_values_.size() == 1 || mean_values_.size() == img_channels) <<
+     "Specify either 1 mean_value or as many as channels: " << img_channels;
+    if (img_channels > 1 && mean_values_.size() == 1) {
+      // Replicate the mean_value for simplicity
+      for (int c = 1; c < img_channels; ++c) {
+        mean_values_.push_back(mean_values_[0]);
+      }
+    }
+  }
+
+  cv::Mat cv_cropped_img = cv_img;
+  if (crop_size) {
+    CHECK_EQ(crop_size, height);
+    CHECK_EQ(crop_size, width);
+    // We only do random crop when we do training.
+    if (phase_ == TRAIN) {
+      if (h_off == -1 && w_off == -1)
+      {
+    	  h_off = Rand(img_height - crop_size + 1);
+    	  w_off = Rand(img_width - crop_size + 1);
+      }
+    }
+    else {
+      if (h_off == -1 && w_off == -1)
+      {
+    	  h_off = (img_height - crop_size) / 2;
+      	  w_off = (img_width - crop_size) / 2;
+      }
+    }
+    cv::Rect roi(w_off, h_off, crop_size, crop_size);
+    cv_cropped_img = cv_img(roi);
+  }
+  else {
+	h_off = 0;
+	w_off = 0;
+    CHECK_EQ(img_height, height);
+    CHECK_EQ(img_width, width);
+  }
+
+  CHECK(cv_cropped_img.data);
+
+  Dtype* transformed_data = transformed_blob->mutable_cpu_data();
+  int top_index;
+  for (int h = 0; h < height; ++h) {
+    const uchar* ptr = cv_cropped_img.ptr<uchar>(h);
+    int img_index = 0;
+    for (int w = 0; w < width; ++w) {
+      for (int c = 0; c < img_channels; ++c) {
+    	float now_col = col_ranges[c];
+        if (do_mirror) {
+          top_index = (c * height + h) * width + (width - 1 - w);
+        } else {
+          top_index = (c * height + h) * width + w;
+        }
+        // int top_index = (c * height + h) * width + w;
+        Dtype pixel = static_cast<Dtype>(ptr[img_index++]);
+        // color augmentation
+        pixel = std::min( pixel * now_col, Dtype(255.0) );
+
+        if (has_mean_file) {
+          int mean_index = (c * img_height + h_off + h) * img_width + w_off + w;
+          if (crop_size == data_mean_.height() && crop_size == data_mean_.width() )
+          {
+        	  mean_index = (c * height + h) * width + w;
+          }
+          transformed_data[top_index] = (pixel - mean[mean_index]) * scale;
+        } else {
+          if (has_mean_values) {
+            transformed_data[top_index] =
+              (pixel - mean_values_[c]) * scale;
+          } else {
+            transformed_data[top_index] = pixel * scale;
+          }
+        }
+      }
+    }
+  }
+}
+
+
+
 template<typename Dtype>
 void DataTransformer<Dtype>::Transform(Blob<Dtype>* input_blob,
                                        Blob<Dtype>* transformed_blob) {
