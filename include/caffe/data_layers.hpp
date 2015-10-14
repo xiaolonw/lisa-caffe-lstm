@@ -18,6 +18,13 @@
 #include "caffe/proto/caffe.pb.h"
 #include "caffe/util/db.hpp"
 
+
+
+#include <opencv2/core/core.hpp>
+
+using namespace cv;
+
+
 namespace caffe {
 
 /**

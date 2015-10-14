@@ -925,7 +925,6 @@ const char* UpgradeV1LayerType(const V1LayerParameter_LayerType type) {
     return "RgbVideoData";
   case V1LayerParameter_LayerType_FLOW_VIDEO_DATA:
     return "FlowVideoData";
-
   default:
     LOG(FATAL) << "Unknown V1LayerParameter layer type: " << type;
     return "";
