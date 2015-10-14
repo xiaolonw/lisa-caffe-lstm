@@ -23,7 +23,7 @@ layer {
     new_width: 340
     shuffle: true
     color_aug: true
-    pair_size: 10
+    pair_size: 16
     rand_frame: true
     
   }
