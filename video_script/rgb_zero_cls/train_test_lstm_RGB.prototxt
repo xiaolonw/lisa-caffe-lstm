@@ -1,5 +1,4 @@
 name: "lstm_joints"
-name: "ActionNet" 
 layer {
   name: "data"
   type: "RgbVideoData"
@@ -520,7 +519,6 @@ layer{
       dim: 4096
     }
   }
-  include: { phase: TRAIN }
 }
 layer{
   name: "reshape-label"
@@ -533,7 +531,6 @@ layer{
       dim: 8
     }
   }
-  include: { phase: TRAIN }
 }
 layer{
   name: "reshape-cm"
@@ -546,7 +543,6 @@ layer{
       dim: 8
     }
   }
-  include: { phase: TRAIN }
 }
 layer {
   name: "lstm1"
