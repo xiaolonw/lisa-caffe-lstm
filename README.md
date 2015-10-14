@@ -33,3 +33,8 @@ Please cite Caffe in your publications if it helps your research:
       Year = {2014}
     }
 # lisa-caffe-lstm
+
+fork from: 
+
+https://github.com/LisaAnne/lisa-caffe-public
+
