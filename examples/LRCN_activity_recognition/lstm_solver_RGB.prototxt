@@ -13,7 +13,7 @@ weight_decay: 0.005
 snapshot: 5000
 snapshot_prefix: "snapshots_lstm_RGB"
 solver_mode: GPU
-device_id: 0
+device_id: 1
 random_seed: 1701
 average_loss: 1000
 clip_gradients: 5

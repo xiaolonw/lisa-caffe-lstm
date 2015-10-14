@@ -22,7 +22,7 @@ import skimage.io
 import copy
 
 flow_frames = 'flow_images/'
-RGB_frames = 'frames/'
+RGB_frames = '/scratch/xiaolonw/UCF101_frames_org2/'
 test_frames = 16 
 train_frames = 16
 test_buffer = 3
