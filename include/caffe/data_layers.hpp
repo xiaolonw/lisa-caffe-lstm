@@ -262,7 +262,7 @@ class RgbVideoDataLayer : public BasePrefetchingDataLayer<Dtype> {
 
   virtual inline const char* type() const { return "RgbVideoData"; }
   virtual inline int ExactNumBottomBlobs() const { return 0; }
-  virtual inline int ExactNumTopBlobs() const { return 4; }
+  virtual inline int ExactNumTopBlobs() const { return 2; }
  protected:
   shared_ptr<Caffe::RNG> prefetch_rng_;
   virtual void ShuffleImages();
@@ -288,7 +288,7 @@ class FlowVideoDataLayer : public BasePrefetchingDataLayer<Dtype> {
 
   virtual inline const char* type() const { return "FlowVideoData"; }
   virtual inline int ExactNumBottomBlobs() const { return 0; }
-  virtual inline int ExactNumTopBlobs() const { return 4; }
+  virtual inline int ExactNumTopBlobs() const { return 2; }
 
   string AddFrame(string fname, int id);
   void process_input2(const Mat &cv_img, float bound, bool domirror, Datum* datum, int read_mode);
