@@ -518,6 +518,8 @@ V1LayerParameter_LayerType UpgradeV0LayerType(const string& type) {
     return V1LayerParameter_LayerType_WINDOW_DATA;
   } else if (type == "rgb_video_data") {
 	return V1LayerParameter_LayerType_RGB_VIDEO_DATA;
+  } else if (type == "flow_video_data") {
+	return V1LayerParameter_LayerType_FLOW_VIDEO_DATA;
   } else {
     LOG(FATAL) << "Unknown layer name: " << type;
     return V1LayerParameter_LayerType_NONE;
@@ -921,6 +923,8 @@ const char* UpgradeV1LayerType(const V1LayerParameter_LayerType type) {
     return "Threshold";
   case V1LayerParameter_LayerType_RGB_VIDEO_DATA:
     return "RgbVideoData";
+  case V1LayerParameter_LayerType_FLOW_VIDEO_DATA:
+    return "FlowVideoData";
 
   default:
     LOG(FATAL) << "Unknown V1LayerParameter layer type: " << type;

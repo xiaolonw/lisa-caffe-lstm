@@ -269,6 +269,38 @@ class RgbVideoDataLayer : public BasePrefetchingDataLayer<Dtype> {
 
 };
 
+
+template <typename Dtype>
+class FlowVideoDataLayer : public BasePrefetchingDataLayer<Dtype> {
+ public:
+  explicit FlowVideoDataLayer(const LayerParameter& param)
+      : BasePrefetchingDataLayer<Dtype>(param) {}
+  virtual ~FlowVideoDataLayer();
+  virtual void DataLayerSetUp(const vector<Blob<Dtype>*>& bottom,
+      const vector<Blob<Dtype>*>& top);
+
+  virtual inline const char* type() const { return "FlowVideoData"; }
+  virtual inline int ExactNumBottomBlobs() const { return 0; }
+  virtual inline int ExactNumTopBlobs() const { return 4; }
+
+  string AddFrame(string fname, int id);
+  void process_input2(const Mat &cv_img, float bound, bool domirror, Datum* datum, int read_mode);
+
+ protected:
+  shared_ptr<Caffe::RNG> prefetch_rng_;
+  virtual void ShuffleImages();
+  virtual void InternalThreadEntry();
+  static int myrandomdata (int i);
+  float random(float start, float end);
+
+  vector<std::pair<std::string, int> > lines_;
+  int lines_id_;
+  vector<vector<int> > multiview_params_;
+
+};
+
+
+
 /**
  * @brief Provides data to the Net from memory.
  *

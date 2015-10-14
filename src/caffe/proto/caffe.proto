@@ -895,6 +895,7 @@ message V1LayerParameter {
     //added by wxl
     
     RGB_VIDEO_DATA = 40;
+    FLOW_VIDEO_DATA = 40;
   }
   optional LayerType type = 5;
   repeated BlobProto blobs = 6;
