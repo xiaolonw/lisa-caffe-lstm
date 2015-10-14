@@ -176,10 +176,12 @@ void RgbVideoDataLayer<Dtype>::InternalThreadEntry() {
   // datum scales
   const int lines_size = lines_.size();
   CHECK_EQ(batch_size % pairsize, 0);
+  int video_size = batch_size / pairsize;
   for (int item_id = 0; item_id < batch_size; item_id += pairsize) {
     // get a blob
     timer.Start();
     CHECK_GT(lines_size, lines_id_);
+    int video_id = item_id / pairsize;
 
     int img_channel = this->prefetch_data_.channels();
     int offset = 0;
@@ -234,14 +236,15 @@ void RgbVideoDataLayer<Dtype>::InternalThreadEntry() {
         //LOG(INFO) << "fretch" << lines_[lines_id_ + id].first << h_off << w_off << do_mirror << " " << lines_[lines_id_].second << " " << item_id;
 
         CHECK(cv_img.data) << "Could not load " << lines_[lines_id_ + id].first;
-        offset = this->prefetch_data_.offset(item_id + i);
+        int now_itemid = video_size * i + video_id;
+        offset = this->prefetch_data_.offset(now_itemid);
         this->transformed_data_.set_cpu_data(prefetch_data + offset);
         this->data_transformer_->Transform(cv_img, &(this->transformed_data_), h_off, w_off, do_mirror, col_range);
-        prefetch_label[ (item_id + i) * 2] = lines_[lines_id_ + id].second;
+        prefetch_label[ (now_itemid) * 2] = lines_[lines_id_ + id].second;
         if (pairsize == 0)
-        	prefetch_label[(item_id + i) * 2 + 1] = 0;
+        	prefetch_label[(now_itemid) * 2 + 1] = 0;
         else
-        	prefetch_label[(item_id + i) * 2 + 1] = 1;
+        	prefetch_label[(now_itemid) * 2 + 1] = 1;
 
 
     }

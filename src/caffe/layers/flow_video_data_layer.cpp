@@ -291,10 +291,12 @@ void FlowVideoDataLayer<Dtype>::InternalThreadEntry() {
   // datum scales
   const int lines_size = lines_.size();
   CHECK_EQ(batch_size % pairsize, 0);
+  int video_size = batch_size / pairsize;
   for (int item_id = 0; item_id < batch_size; item_id += pairsize) {
     // get a blob
     timer.Start();
     CHECK_GT(lines_size, lines_id_);
+    int video_id = item_id / pairsize;
 
     int img_channel = this->prefetch_data_.channels() / (pairsize_sub * frame_num);
     int offset = 0;
@@ -334,6 +336,7 @@ void FlowVideoDataLayer<Dtype>::InternalThreadEntry() {
     	id += rand_range;
     	id = std::max(id, 0);
     	id = std::min(id, video_frames - 1);
+    	int now_itemid = video_size * i + video_id;
 
     	for (int frame_id = 0; frame_id < frame_num; frame_id ++)
 		{
@@ -349,7 +352,8 @@ void FlowVideoDataLayer<Dtype>::InternalThreadEntry() {
 		        //LOG(INFO) << "Frame number: " << video_frames << "side_num: " << side_num;
 		        //if (item_id < 3 * sidesize || item_id > batch_size - 3 * sidesize)
 		        //LOG(INFO) << "fretch" << lines_[nowid].first << h_off << w_off << do_mirror << " " << lines_[nowid].second << " " << item_id;
-			    offset = this->prefetch_data_.offset(item_id + i, img_channel * (frame_id * pairsize_sub + pair_id));
+
+			    offset = this->prefetch_data_.offset(now_itemid, img_channel * (frame_id * pairsize_sub + pair_id));
 			    this->transformed_data_.set_cpu_data(prefetch_data + offset);
 			    if(color_aug)
 				{
@@ -375,11 +379,11 @@ void FlowVideoDataLayer<Dtype>::InternalThreadEntry() {
 			}
 		}
 
-    	prefetch_label[ (item_id + i) * 2] = lines_[lines_id_].second;
+    	prefetch_label[ (now_itemid) * 2] = lines_[lines_id_].second;
 		if (pairsize == 0)
-			prefetch_label[(item_id + i) * 2 + 1] = 0;
+			prefetch_label[(now_itemid) * 2 + 1] = 0;
 		else
-			prefetch_label[(item_id + i) * 2 + 1] = 1;
+			prefetch_label[(now_itemid) * 2 + 1] = 1;
 
 
     }

@@ -1,7 +1,7 @@
 name: "ActionNet" 
 layer {
   name: "data"
-  type: "ImageData"
+  type: "RgbVideoData"
   top: "data"
   top: "label"
   include {
@@ -17,7 +17,7 @@ layer {
   }
   image_data_param {
     root_folder: "/scratch/xiaolonw/action_frames_all/"
-    source: "/share/vol2/home/xiaolonw/action_scripts/splits/split1/trainimglist_full_imgs_split1.txt"
+    source: "/share/vol2/home/xiaolonw/action_scripts/splits/split1/trainimglist_block_imgs_split1.txt"
     batch_size: 64
     new_height: 256
     new_width: 340
