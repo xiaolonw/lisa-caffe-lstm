@@ -3,7 +3,7 @@ layer {
   name: "data"
   type: "FlowVideoData"
   top: "data"
-  top: "label"
+  top: "label2"
   include {
     phase: TRAIN
   }
