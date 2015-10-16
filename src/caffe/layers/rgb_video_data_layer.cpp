@@ -193,7 +193,7 @@ void RgbVideoDataLayer<Dtype>::InternalThreadEntry() {
     lines_id_ ++;
     float gap_num = (Dtype)(video_frames) / (pairsize - 1 );
 
-    LOG(INFO) << lines_[lines_id_].first ;
+    // LOG(INFO) << lines_[lines_id_].first ;
 
     CHECK( gap_num > 0);
     int perturb_range = std::max( (int)(gap_num / 2) , 1);
@@ -234,8 +234,8 @@ void RgbVideoDataLayer<Dtype>::InternalThreadEntry() {
             new_height, new_width, is_color);
         // debug
         //LOG(INFO) << "Frame number: " << video_frames << "side_num: " << side_num;
-        //if (item_id < 3 * sidesize || item_id > batch_size - 3 * sidesize)
-        //LOG(INFO) << "fretch" << lines_[lines_id_ + id].first << h_off << w_off << do_mirror << " " << lines_[lines_id_].second << " " << item_id;
+        if (item_id < 3 * pairsize || item_id > batch_size - 3 * pairsize)
+        LOG(INFO) << "fretch" << lines_[lines_id_ + id].first << h_off << w_off << do_mirror << " " << lines_[lines_id_].second << " " << item_id;
 
         CHECK(cv_img.data) << "Could not load " << lines_[lines_id_ + id].first;
         int now_itemid = video_size * i + video_id;
