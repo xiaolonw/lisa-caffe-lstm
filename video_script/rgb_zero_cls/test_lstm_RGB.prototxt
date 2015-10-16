@@ -18,7 +18,7 @@ layer {
   image_data_param {
     root_folder: "/scratch/xiaolonw/action_frames_all/"
     source: "/share/vol2/home/xiaolonw/action_scripts/splits/split1/testimglist_block_imgs_split1.txt"
-    batch_size: 128
+    batch_size: 32
     new_height: 256
     new_width: 340
     shuffle: false
