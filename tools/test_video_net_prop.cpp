@@ -125,7 +125,7 @@ int main(int argc, char** argv)
 		int channels = bboxs->channels();
 		int height = bboxs->height();
 		int width = bboxs->width();
-		printf("bsize: %d, channels: %d, height: %d, width: %d\n", bsize, channels, height, width);
+		//printf("bsize: %d, channels: %d, height: %d, width: %d\n", bsize, channels, height, width);
 
 		for (int i = 0; i < channels && counts < data_counts; i++, counts++)
 		{
