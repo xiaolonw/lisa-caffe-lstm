@@ -109,7 +109,7 @@ int main(int argc, char** argv)
 	file = fopen(labelFile.c_str(), "r");
 
 	Blob<float>* c1 = (*(caffe_test_net.bottom_vecs().rbegin()))[0];
-    int c2 = c1->num();
+    int c2 = c1->channels();
     printf("num:%d, channel:%d, height:%d, width:%d\n", c1->num(), c1->channels(), c1->height(), c1->width() );
 	int batchCount = std::ceil( (float)(data_counts) / (floor)(c2) );//(test_net_param.layers(0).layer().batchsize()));//                (test_net_param.layers(0).layer().batchsize() ));
 
