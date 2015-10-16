@@ -108,7 +108,7 @@ int main(int argc, char** argv)
 
 	file = fopen(labelFile.c_str(), "r");
 
-	Blob<float>* c1 = (*(caffe_test_net.bottom_vecs().rbegin()))[0];
+	Blob<float>* c1 = (*(caffe_test_net.top_vecs().rbegin()))[0];
     int c2 = c1->channels();
     printf("num:%d, channel:%d, height:%d, width:%d\n", c1->num(), c1->channels(), c1->height(), c1->width() );
 	int batchCount = std::ceil( (float)(data_counts) / (floor)(c2) );//(test_net_param.layers(0).layer().batchsize()));//                (test_net_param.layers(0).layer().batchsize() ));
@@ -120,7 +120,7 @@ int main(int argc, char** argv)
 		LOG(INFO)<< "processing batch :" << batch_id+1 << "/" << batchCount <<"...";
 
 		const vector<Blob<float>*>& result = caffe_test_net.Forward(dummy_blob_input_vec);
-		Blob<float>* bboxs = (*(caffe_test_net.bottom_vecs().rbegin()))[0];
+		Blob<float>* bboxs = (*(caffe_test_net.top_vecs().rbegin()))[0];
 		int bsize = bboxs->num();
 		int channels = bboxs->channels();
 		int height = bboxs->height();
