@@ -234,11 +234,13 @@ void RgbVideoDataLayer<Dtype>::InternalThreadEntry() {
             new_height, new_width, is_color);
         // debug
         //LOG(INFO) << "Frame number: " << video_frames << "side_num: " << side_num;
-        if (item_id < 3 * pairsize || item_id > batch_size - 3 * pairsize)
-        LOG(INFO) << "fretch" << lines_[lines_id_ + id].first << h_off << w_off << do_mirror << " " << lines_[lines_id_].second << " " << item_id;
+        //if (item_id < 3 * pairsize || item_id > batch_size - 3 * pairsize)
+        //LOG(INFO) << "fretch" << lines_[lines_id_ + id].first << h_off << w_off << do_mirror << " " << lines_[lines_id_].second << " " << item_id;
 
         CHECK(cv_img.data) << "Could not load " << lines_[lines_id_ + id].first;
         int now_itemid = video_size * i + video_id;
+        LOG(INFO) << "fretch" << lines_[lines_id_ + id].first << h_off << w_off << do_mirror << " " << lines_[lines_id_].second << " " << now_itemid;
+
         offset = this->prefetch_data_.offset(now_itemid);
         this->transformed_data_.set_cpu_data(prefetch_data + offset);
         this->data_transformer_->Transform(cv_img, &(this->transformed_data_), h_off, w_off, do_mirror, col_range);
