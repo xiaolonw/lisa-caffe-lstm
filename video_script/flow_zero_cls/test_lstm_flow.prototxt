@@ -519,7 +519,7 @@ layer{
   reshape_param{
     shape{
       dim: 16
-      dim: 8
+      dim: 2
       dim: 4096
     }
   }
@@ -532,7 +532,7 @@ layer{
   reshape_param{
     shape{
       dim: 16
-      dim: 8
+      dim: 2
     }
   }
 }
@@ -544,7 +544,7 @@ layer{
   reshape_param{
     shape{
       dim: 16
-      dim: 8
+      dim: 2
     }
   }
 }
