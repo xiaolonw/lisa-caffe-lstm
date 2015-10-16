@@ -193,6 +193,8 @@ void RgbVideoDataLayer<Dtype>::InternalThreadEntry() {
     lines_id_ ++;
     float gap_num = (Dtype)(video_frames) / (pairsize - 1 );
 
+    LOG(INFO) << lines_[lines_id_].first ;
+
     CHECK( gap_num > 0);
     int perturb_range = std::max( (int)(gap_num / 2) , 1);
     // max range < range_scale
