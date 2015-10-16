@@ -1,5 +1,0 @@
-!/usr/bin/env sh
-
-../../build/tools/test_video_net_prop.bin test_lstm_RGB.prototxt    /nfs.yoda/xiaolonw/models/snapshots_lstm_RGB/snapshots_lstm_RGB_iter_2000.caffemodel  /share/vol2/home/xiaolonw/action_scripts/splits/split1/testimglist_block_imgs_split1.txt  /home/xiaolonw/video_models/results_trans2  0
-
-

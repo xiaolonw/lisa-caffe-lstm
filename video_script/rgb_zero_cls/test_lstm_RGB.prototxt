@@ -45,10 +45,10 @@ layer {
 
 
 layer {
-  name: "conv1_1_flow"
+  name: "conv1_1"
   type: "Convolution"
   bottom: "data"
-  top: "conv1_1_flow"
+  top: "conv1_1"
   param {
     lr_mult: 0
     decay_mult: 0
@@ -66,13 +66,13 @@ layer {
 layer {
   name: "relu1_1"
   type: "ReLU"
-  bottom: "conv1_1_flow"
-  top: "conv1_1_flow"
+  bottom: "conv1_1"
+  top: "conv1_1"
 }
 layer {
   name: "conv1_2"
   type: "Convolution"
-  bottom: "conv1_1_flow"
+  bottom: "conv1_1"
   top: "conv1_2"
   param {
     lr_mult: 0
